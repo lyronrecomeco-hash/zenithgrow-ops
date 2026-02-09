@@ -62,7 +62,7 @@ export default function Login() {
           <div className="relative z-10">
              <p className="text-sm font-semibold tracking-[0.2em] text-muted-foreground mb-6 uppercase flex items-center gap-2">
               <span className="w-4 h-[2px] bg-primary inline-block" />
-              {companyName}
+              GESTÃO DE LOJA V2.1
             </p>
             <h1 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-3">
               Gerencie sua<br />

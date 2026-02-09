@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -7,11 +7,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search, Pencil, Trash2, Package } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, Package, Sparkles, Upload, ImageIcon, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+
+type Step = 'data' | 'description' | 'images';
+
+const STEPS: { key: Step; label: string }[] = [
+  { key: 'data', label: 'Dados' },
+  { key: 'description', label: 'Descrição' },
+  { key: 'images', label: 'Imagens' },
+];
 
 export default function Products() {
   const [products, setProducts] = useState<any[]>([]);
@@ -20,7 +28,12 @@ export default function Products() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editProduct, setEditProduct] = useState<any>(null);
-  const [form, setForm] = useState({ name: '', brand: '', price: '', code: '', category_id: '', description: '' });
+  const [form, setForm] = useState({ name: '', brand: '', price: '', code: '', category_id: '', description: '', image_url: '' });
+  const [step, setStep] = useState<Step>('data');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiImageLoading, setAiImageLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => { loadData(); }, []);
@@ -42,13 +55,15 @@ export default function Products() {
 
   const openCreate = () => {
     setEditProduct(null);
-    setForm({ name: '', brand: '', price: '', code: '', category_id: '', description: '' });
+    setForm({ name: '', brand: '', price: '', code: '', category_id: '', description: '', image_url: '' });
+    setStep('data');
     setDialogOpen(true);
   };
 
   const openEdit = (p: any) => {
     setEditProduct(p);
-    setForm({ name: p.name, brand: p.brand || '', price: String(p.price), code: p.code, category_id: p.category_id || '', description: p.description || '' });
+    setForm({ name: p.name, brand: p.brand || '', price: String(p.price), code: p.code, category_id: p.category_id || '', description: p.description || '', image_url: p.image_url || '' });
+    setStep('data');
     setDialogOpen(true);
   };
 
@@ -56,6 +71,66 @@ export default function Products() {
     const prefix = form.brand ? form.brand.substring(0, 4).toUpperCase() : 'PROD';
     const num = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
     setForm(f => ({ ...f, code: `${prefix}-${num}` }));
+  };
+
+  const generateDescription = async () => {
+    if (!form.name) { toast({ title: 'Preencha o nome do produto primeiro', variant: 'destructive' }); return; }
+    setAiLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-product', {
+        body: { action: 'description', name: form.name, brand: form.brand },
+      });
+      if (error) throw error;
+      if (data?.description) {
+        setForm(f => ({ ...f, description: data.description }));
+        toast({ title: 'Descrição gerada com IA!' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Erro ao gerar descrição', description: err.message, variant: 'destructive' });
+    }
+    setAiLoading(false);
+  };
+
+  const generateImage = async () => {
+    if (!form.name) { toast({ title: 'Preencha o nome do produto primeiro', variant: 'destructive' }); return; }
+    setAiImageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-product', {
+        body: { action: 'image', name: form.name, brand: form.brand },
+      });
+      if (error) throw error;
+      if (data?.imageUrl) {
+        // Upload base64 to storage
+        const base64Data = data.imageUrl.split(',')[1];
+        const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+        const fileName = `${Date.now()}-${form.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+        const { error: uploadError } = await supabase.storage.from('product-images').upload(fileName, byteArray, { contentType: 'image/png' });
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(fileName);
+        setForm(f => ({ ...f, image_url: urlData.publicUrl }));
+        toast({ title: 'Imagem gerada com IA!' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Erro ao gerar imagem', description: err.message, variant: 'destructive' });
+    }
+    setAiImageLoading(false);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+      const { error: uploadError } = await supabase.storage.from('product-images').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(fileName);
+      setForm(f => ({ ...f, image_url: urlData.publicUrl }));
+      toast({ title: 'Imagem enviada!' });
+    } catch (err: any) {
+      toast({ title: 'Erro ao enviar imagem', description: err.message, variant: 'destructive' });
+    }
+    setUploadingImage(false);
   };
 
   const handleSave = async () => {
@@ -67,6 +142,7 @@ export default function Products() {
       code: form.code || `PROD-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`,
       category_id: form.category_id || null,
       description: form.description,
+      image_url: form.image_url,
     };
     if (editProduct) {
       await supabase.from('products').update(data).eq('id', editProduct.id);
@@ -87,31 +163,83 @@ export default function Products() {
     loadData();
   };
 
+  const canGoNext = () => {
+    if (step === 'data') return !!form.name && !!form.price;
+    return true;
+  };
+
+  const nextStep = () => {
+    const idx = STEPS.findIndex(s => s.key === step);
+    if (idx < STEPS.length - 1) setStep(STEPS[idx + 1].key);
+  };
+
+  const prevStep = () => {
+    const idx = STEPS.findIndex(s => s.key === step);
+    if (idx > 0) setStep(STEPS[idx - 1].key);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Produtos</h1>
-          <p className="text-muted-foreground text-base mt-1">{products.length} produtos cadastrados</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Produtos</h1>
+          <p className="text-muted-foreground text-sm sm:text-base mt-1">{products.length} produtos cadastrados</p>
         </div>
-        <Button onClick={openCreate}><Plus className="w-4 h-4 mr-2" />Novo Produto</Button>
+        <Button onClick={openCreate} className="w-full sm:w-auto"><Plus className="w-4 h-4 mr-2" />Novo Produto</Button>
       </div>
 
-      <div className="relative max-w-sm">
+      <div className="relative w-full sm:max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input placeholder="Buscar produtos..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 bg-secondary/50 border-border/50" />
       </div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <div className="glass-card overflow-hidden">
+        {/* Mobile card view */}
+        <div className="block sm:hidden space-y-3">
+          {filtered.map((p) => (
+            <div key={p.id} className="glass-card p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                {p.image_url ? (
+                  <img src={p.image_url} alt={p.name} className="w-14 h-14 rounded-xl object-cover border border-border/30" />
+                ) : (
+                  <div className="w-14 h-14 rounded-xl bg-secondary/50 flex items-center justify-center">
+                    <Package className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-base truncate">{p.name}</p>
+                  <p className="text-sm text-muted-foreground">{p.brand || '—'}</p>
+                  <p className="font-mono text-xs text-muted-foreground mt-0.5">{p.code}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-base font-medium">R$ {Number(p.price).toLocaleString('pt-BR')}</p>
+                <div className="flex items-center gap-2">
+                  <Badge variant={p.stock <= p.min_stock ? 'destructive' : 'secondary'} className={cn("text-xs", p.stock <= p.min_stock ? 'bg-destructive/10 text-destructive border-destructive/20' : 'bg-secondary')}>
+                    {p.stock} un.
+                  </Badge>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(p)}><Pencil className="w-3.5 h-3.5" /></Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setDeleteId(p.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {filtered.length === 0 && (
+            <div className="glass-card p-12 text-center text-muted-foreground">Nenhum produto encontrado</div>
+          )}
+        </div>
+
+        {/* Desktop table view */}
+        <div className="hidden sm:block glass-card overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="border-border/50 hover:bg-transparent">
+                <TableHead className="text-xs font-semibold text-muted-foreground w-10"></TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground">CÓDIGO</TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground">PRODUTO</TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground hidden md:table-cell">MARCA</TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground">PREÇO</TableHead>
-                <TableHead className="text-xs font-semibold text-muted-foreground hidden sm:table-cell">ESTOQUE</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground">ESTOQUE</TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground hidden lg:table-cell">CATEGORIA</TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground text-right">AÇÕES</TableHead>
               </TableRow>
@@ -119,11 +247,20 @@ export default function Products() {
             <TableBody>
               {filtered.map((p) => (
                 <TableRow key={p.id} className="border-border/30 hover:bg-secondary/30 transition-colors">
+                  <TableCell className="w-10 p-2">
+                    {p.image_url ? (
+                      <img src={p.image_url} alt={p.name} className="w-10 h-10 rounded-lg object-cover" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-secondary/50 flex items-center justify-center">
+                        <Package className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    )}
+                  </TableCell>
                   <TableCell className="font-mono text-xs text-muted-foreground">{p.code}</TableCell>
                   <TableCell className="font-medium text-base">{p.name}</TableCell>
                   <TableCell className="text-sm text-muted-foreground hidden md:table-cell">{p.brand}</TableCell>
                   <TableCell className="text-base font-medium">R$ {Number(p.price).toLocaleString('pt-BR')}</TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell>
                     <Badge variant={p.stock <= p.min_stock ? 'destructive' : 'secondary'} className={cn("text-xs", p.stock <= p.min_stock ? 'bg-destructive/10 text-destructive border-destructive/20' : 'bg-secondary')}>
                       {p.stock} un.
                     </Badge>
@@ -138,49 +275,190 @@ export default function Products() {
                 </TableRow>
               ))}
               {filtered.length === 0 && (
-                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground text-base">Nenhum produto encontrado</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="text-center py-12 text-muted-foreground text-base">Nenhum produto encontrado</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
         </div>
       </motion.div>
 
-      {/* Create/Edit Dialog */}
+      {/* Multi-step Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg bg-card border-border">
+        <DialogContent className="sm:max-w-lg bg-card border-border max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg">{editProduct ? 'Editar Produto' : 'Novo Produto'}</DialogTitle>
-            <DialogDescription>Preencha os dados do produto</DialogDescription>
+            <DialogDescription>
+              {step === 'data' && 'Preencha os dados básicos do produto'}
+              {step === 'description' && 'Descrição do produto — pode gerar com IA'}
+              {step === 'images' && 'Adicione imagens do produto'}
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2"><Label>Nome *</Label><Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="bg-secondary/50" /></div>
-              <div className="space-y-2"><Label>Marca</Label><Input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} className="bg-secondary/50" /></div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2"><Label>Preço (R$) *</Label><Input type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} className="bg-secondary/50" /></div>
-              <div className="space-y-2">
-                <Label>Código</Label>
-                <div className="flex gap-2">
-                  <Input value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} placeholder="AUTO" className="bg-secondary/50" />
-                  <Button variant="outline" size="icon" onClick={generateCode} type="button" className="shrink-0"><Package className="w-4 h-4" /></Button>
+
+          {/* Step indicators */}
+          <div className="flex items-center gap-2 py-2">
+            {STEPS.map((s, i) => (
+              <div key={s.key} className="flex items-center gap-2 flex-1">
+                <button
+                  onClick={() => setStep(s.key)}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all w-full justify-center",
+                    step === s.key
+                      ? "bg-primary/10 text-primary border border-primary/20"
+                      : "text-muted-foreground hover:bg-secondary/50"
+                  )}
+                >
+                  <span className={cn(
+                    "w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold",
+                    step === s.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  )}>
+                    {i + 1}
+                  </span>
+                  <span className="hidden sm:inline">{s.label}</span>
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="py-4">
+            {/* Step 1: Data */}
+            {step === 'data' && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2"><Label>Nome *</Label><Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="bg-secondary/50" /></div>
+                  <div className="space-y-2"><Label>Marca</Label><Input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} className="bg-secondary/50" /></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2"><Label>Preço (R$) *</Label><Input type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} className="bg-secondary/50" /></div>
+                  <div className="space-y-2">
+                    <Label>Código</Label>
+                    <div className="flex gap-2">
+                      <Input value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} placeholder="AUTO" className="bg-secondary/50" />
+                      <Button variant="outline" size="icon" onClick={generateCode} type="button" className="shrink-0"><Package className="w-4 h-4" /></Button>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Categoria</Label>
+                  <Select value={form.category_id} onValueChange={v => setForm(f => ({ ...f, category_id: v }))}>
+                    <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectContent>
+                      {categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Categoria</Label>
-              <Select value={form.category_id} onValueChange={v => setForm(f => ({ ...f, category_id: v }))}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                <SelectContent>
-                  {categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2"><Label>Descrição</Label><Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="bg-secondary/50 min-h-[80px]" /></div>
+            )}
+
+            {/* Step 2: Description */}
+            {step === 'description' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Descrição</Label>
+                    <Button variant="outline" size="sm" onClick={generateDescription} disabled={aiLoading} className="gap-1.5">
+                      {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-primary" />}
+                      Gerar com IA
+                    </Button>
+                  </div>
+                  <Textarea
+                    value={form.description}
+                    onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                    className="bg-secondary/50 min-h-[160px]"
+                    placeholder="Descreva o produto ou clique em 'Gerar com IA'..."
+                  />
+                </div>
+                {aiLoading && (
+                  <div className="glass-card p-4 flex items-center gap-3">
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                    <div>
+                      <p className="text-sm font-medium">Gerando descrição...</p>
+                      <p className="text-xs text-muted-foreground">A IA está criando uma descrição comercial para "{form.name}"</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 3: Images */}
+            {step === 'images' && (
+              <div className="space-y-4">
+                {form.image_url && (
+                  <div className="relative rounded-xl overflow-hidden border border-border/30">
+                    <img src={form.image_url} alt="Produto" className="w-full h-48 object-contain bg-secondary/20" />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2 h-7 text-xs"
+                      onClick={() => setForm(f => ({ ...f, image_url: '' }))}
+                    >
+                      Remover
+                    </Button>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="glass-card p-6 flex flex-col items-center gap-3 hover:border-primary/30 transition-all cursor-pointer text-center"
+                  >
+                    {uploadingImage ? <Loader2 className="w-8 h-8 text-primary animate-spin" /> : <Upload className="w-8 h-8 text-primary" />}
+                    <div>
+                      <p className="font-medium text-sm">Enviar do Dispositivo</p>
+                      <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WebP</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={generateImage}
+                    disabled={aiImageLoading || !form.name}
+                    className="glass-card p-6 flex flex-col items-center gap-3 hover:border-primary/30 transition-all cursor-pointer text-center"
+                  >
+                    {aiImageLoading ? <Loader2 className="w-8 h-8 text-primary animate-spin" /> : <Sparkles className="w-8 h-8 text-primary" />}
+                    <div>
+                      <p className="font-medium text-sm">Gerar com IA</p>
+                      <p className="text-xs text-muted-foreground mt-1">Imagem automática</p>
+                    </div>
+                  </button>
+                </div>
+
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+
+                {aiImageLoading && (
+                  <div className="glass-card p-4 flex items-center gap-3">
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                    <div>
+                      <p className="text-sm font-medium">Gerando imagem...</p>
+                      <p className="text-xs text-muted-foreground">A IA está criando uma foto profissional de "{form.name}"</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSave}>{editProduct ? 'Salvar' : 'Criar Produto'}</Button>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
+              {step !== 'data' && (
+                <Button variant="outline" onClick={prevStep} className="flex-1 sm:flex-none">
+                  <ChevronLeft className="w-4 h-4 mr-1" /> Voltar
+                </Button>
+              )}
+              {step === 'data' && (
+                <Button variant="outline" onClick={() => setDialogOpen(false)} className="flex-1 sm:flex-none">Cancelar</Button>
+              )}
+            </div>
+            <div className="flex gap-2 w-full sm:w-auto">
+              {step !== 'images' ? (
+                <Button onClick={nextStep} disabled={!canGoNext()} className="flex-1 sm:flex-none">
+                  Próximo <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              ) : (
+                <Button onClick={handleSave} className="flex-1 sm:flex-none">
+                  {editProduct ? 'Salvar' : 'Criar Produto'}
+                </Button>
+              )}
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
