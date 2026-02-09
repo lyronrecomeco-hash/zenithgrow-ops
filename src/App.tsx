@@ -19,6 +19,7 @@ import Invoices from "@/pages/Invoices";
 import Reports from "@/pages/Reports";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
+import Store from "@/pages/Store";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <CompanyProvider>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/loja" element={<Store />} />
               <Route path="/" element={<Layout />}>
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="dashboard" element={<Dashboard />} />
