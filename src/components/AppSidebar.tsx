@@ -38,9 +38,9 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
             <Store className="w-5 h-5 text-primary" />
           </div>
-          <div>
-            <h1 className="font-semibold text-base text-foreground">{companyName}</h1>
-            <p className="text-xs text-muted-foreground">Sistema ERP</p>
+          <div className="min-w-0">
+            <h1 className="font-bold text-sm tracking-wide text-foreground uppercase">GESTÃO DE LOJA V2.1</h1>
+            <p className="text-xs text-muted-foreground truncate">Gerencie sua {companyName}</p>
           </div>
         </div>
       </div>
