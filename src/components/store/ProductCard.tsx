@@ -79,10 +79,19 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Brand */}
         {product.brand && (
-          <span className="text-[10px] text-muted-foreground/60 leading-none mt-auto pt-1.5 uppercase tracking-wide">
+          <span className="text-[10px] text-muted-foreground/60 leading-none uppercase tracking-wide">
             {product.brand}
           </span>
         )}
+
+        {/* CTA Button */}
+        <button
+          className="mt-auto pt-2 w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors"
+          onClick={(e) => { e.stopPropagation(); navigate(`/loja/${product.id}`); }}
+        >
+          <Eye className="w-3.5 h-3.5" />
+          Ver detalhes
+        </button>
       </div>
     </motion.div>
   );
