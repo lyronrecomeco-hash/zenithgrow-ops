@@ -130,13 +130,11 @@ export default function Store() {
         </p>
 
         {/* Grid */}
-        <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
-          <AnimatePresence mode="popLayout">
-            {paginated.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
+          {paginated.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
 
         {filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
