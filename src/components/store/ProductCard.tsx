@@ -16,7 +16,6 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
-  onSelect: (product: Product) => void;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
