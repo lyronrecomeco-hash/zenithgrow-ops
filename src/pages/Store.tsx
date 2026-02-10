@@ -244,8 +244,10 @@ export default function Store() {
         )}
       </main>
 
-      <StoreFooter companyName={company.name} />
+      <StoreFooter companyName={company.name} phone={company.phone} />
       </div>
+
+      <FloatingWhatsApp phone={company.phone || ''} />
     </div>
   );
 }
