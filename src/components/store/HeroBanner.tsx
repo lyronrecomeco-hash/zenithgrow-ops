@@ -73,14 +73,11 @@ export default function HeroBanner({ companyName, products = [], onProductSelect
           <div className="relative sm:max-w-4xl sm:mx-auto">
             {/* MOBILE: full-bleed ML style */}
             <div className="sm:hidden">
-              <AnimatePresence mode="wait">
-                <motion.div
+              <div className="relative overflow-hidden">
+                {/* Use key to swap, CSS transition only */}
+                <div
                   key={product.id}
-                  initial={{ opacity: 0, x: 40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -40 }}
-                  transition={{ duration: 0.3 }}
-                  className="relative cursor-pointer"
+                  className="relative cursor-pointer animate-fade-in"
                   onClick={() => onProductSelect?.(product)}
                 >
                   <div className="w-full aspect-[16/9] bg-secondary/30 flex items-center justify-center overflow-hidden">
@@ -108,8 +105,8 @@ export default function HeroBanner({ companyName, products = [], onProductSelect
                       {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </p>
                   </div>
-                </motion.div>
-              </AnimatePresence>
+                </div>
+              </div>
 
               {/* Mobile nav arrows */}
               {featured.length > 1 && (
