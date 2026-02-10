@@ -26,7 +26,7 @@ export default function RelatedProducts({ categoryId, currentProductId }: Relate
     const load = async () => {
       const { data } = await supabase
         .from('products')
-        .select('id,name,price,image_url,stock,brand')
+        .select('id,code,name,price,image_url,stock,brand')
         .eq('category_id', categoryId)
         .neq('id', currentProductId)
         .gt('stock', 0)
