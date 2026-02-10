@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Loader2, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import StoreHeader from '@/components/store/StoreHeader';
 import HeroBanner from '@/components/store/HeroBanner';
