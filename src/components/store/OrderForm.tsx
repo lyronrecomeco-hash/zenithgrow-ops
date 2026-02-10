@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { MessageCircle, User, Phone, MapPin, FileText, Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { MessageCircle, User, Phone, MapPin, FileText, Minus, Plus, Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 
 interface OrderFormProps {
