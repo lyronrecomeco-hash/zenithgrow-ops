@@ -1,4 +1,4 @@
-import { Store } from 'lucide-react';
+import { Store, Search } from 'lucide-react';
 import CartButton from '@/components/store/CartButton';
 import { useState } from 'react';
 import OrderForm from '@/components/store/OrderForm';
