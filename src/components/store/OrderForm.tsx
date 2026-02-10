@@ -15,6 +15,7 @@ interface OrderFormProps {
 }
 
 export default function OrderForm({ open, onClose, whatsappNumber }: OrderFormProps) {
+  const navigate = useNavigate();
   const { items, updateQuantity, removeItem, clearCart, totalPrice } = useCart();
   const [form, setForm] = useState({
     name: '',
