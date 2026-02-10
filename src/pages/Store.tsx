@@ -109,7 +109,7 @@ export default function Store() {
         onProductSelect={(p) => setSelectedProduct(p as Product)}
       />
 
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 pb-16 space-y-4 sm:space-y-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 pb-16 space-y-3 sm:space-y-5">
         {/* Search + Filter Toggle */}
         <div className="flex gap-2 max-w-lg mx-auto">
           <div className="flex-1 relative">
@@ -119,12 +119,12 @@ export default function Store() {
               placeholder="Buscar produto..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card/60 border border-border/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
+              className="w-full pl-9 pr-4 py-2 sm:py-2.5 rounded-xl bg-card/60 border border-border/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`p-2.5 rounded-xl border transition-colors ${showFilters ? 'text-primary border-primary/50 bg-primary/10' : 'text-muted-foreground border-border/50 bg-card/60'}`}
+            className={`p-2 sm:p-2.5 rounded-xl border transition-colors ${showFilters ? 'text-primary border-primary/50 bg-primary/10' : 'text-muted-foreground border-border/50 bg-card/60'}`}
           >
             <SlidersHorizontal className="w-4 h-4" />
           </button>
