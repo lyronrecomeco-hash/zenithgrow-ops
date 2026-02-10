@@ -109,7 +109,7 @@ export default function Store() {
       </div>
 
       <div className="relative z-10">
-      <StoreHeader companyName={company.name} />
+      <StoreHeader companyName={company.name} whatsappNumber={company.phone || ''} />
       <HeroBanner
         companyName={company.name}
         products={products}
