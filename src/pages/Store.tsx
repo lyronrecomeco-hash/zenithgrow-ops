@@ -139,7 +139,11 @@ export default function Store() {
         </motion.div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-muted-foreground py-12">Nenhum produto encontrado.</p>
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <Search className="w-10 h-10 text-muted-foreground/40" />
+            <p className="text-muted-foreground text-sm">Nenhum produto encontrado para "<span className="text-foreground font-medium">{search}</span>"</p>
+            <button onClick={() => setSearch('')} className="text-xs text-primary hover:underline">Limpar busca</button>
+          </div>
         )}
 
         {/* Pagination */}
