@@ -57,7 +57,7 @@ export default function ProductDetail() {
     load();
     setQuantity(1);
     setAddedToCart(false);
-  }, [id]);
+  }, [code]);
 
   if (loading) {
     return (
