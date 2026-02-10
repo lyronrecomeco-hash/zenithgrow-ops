@@ -35,11 +35,14 @@ const App = () => (
           <CompanyProvider>
             <CartProvider>
               <Routes>
+                {/* Loja pública */}
+                <Route path="/" element={<Store />} />
+                <Route path="/produto/:id" element={<ProductDetail />} />
+
+                {/* Admin */}
                 <Route path="/login" element={<Login />} />
-                <Route path="/loja" element={<Store />} />
-                <Route path="/loja/:id" element={<ProductDetail />} />
-                <Route path="/" element={<Layout />}>
-                  <Route index element={<Navigate to="/dashboard" replace />} />
+                <Route path="/admin" element={<Layout />}>
+                  <Route index element={<Navigate to="/admin/dashboard" replace />} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="products" element={<Products />} />
                   <Route path="categories" element={<Categories />} />
