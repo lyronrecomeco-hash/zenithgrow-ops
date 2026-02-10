@@ -70,7 +70,7 @@ export default function ProductDetail() {
   if (!product) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <StoreHeader companyName={company.name} whatsappNumber={company.phone || ''} />
+        <StoreHeader companyName={company.name} whatsappNumber={company.phone || ''} search="" onSearchChange={() => {}} />
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <Package className="w-16 h-16 text-muted-foreground/30" />
           <p className="text-muted-foreground">Produto não encontrado.</p>
@@ -138,7 +138,7 @@ export default function ProductDetail() {
       </div>
 
       <div className="relative z-10">
-        <StoreHeader companyName={company.name} whatsappNumber={company.phone || ''} />
+        <StoreHeader companyName={company.name} whatsappNumber={company.phone || ''} search="" onSearchChange={() => {}} />
 
         <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-24">
           {/* Back button */}
