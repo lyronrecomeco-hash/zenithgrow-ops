@@ -30,39 +30,39 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.25 }}
       onClick={() => onSelect(product)}
-      className="bg-card/60 border border-border/50 overflow-hidden cursor-pointer group hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-200 flex flex-col rounded-xl"
+      className="bg-card border border-border/60 overflow-hidden cursor-pointer group hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-200 flex flex-col rounded-xl"
     >
       {/* Image */}
-      <div className="aspect-[4/3] bg-secondary/20 flex items-center justify-center overflow-hidden relative">
+      <div className="aspect-[4/3] bg-secondary/30 flex items-center justify-center overflow-hidden relative">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
           />
         ) : (
-          <Package className="w-10 h-10 text-muted-foreground/20" />
+          <Package className="w-10 h-10 text-muted-foreground/30" />
         )}
         {!inStock && (
-          <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-            <span className="text-[10px] font-semibold text-destructive bg-destructive/10 px-2.5 py-1 rounded-full border border-destructive/20">
+          <div className="absolute inset-0 bg-background/70 backdrop-blur-sm flex items-center justify-center">
+            <span className="text-[10px] font-semibold text-destructive bg-destructive/15 px-2.5 py-1 rounded-full border border-destructive/30">
               Esgotado
             </span>
           </div>
         )}
       </div>
 
-      {/* Info - structured like ML */}
-      <div className="p-3 sm:p-3.5 flex flex-col flex-1 gap-1.5">
-        {/* Price first - most important info */}
-        <span className="text-lg sm:text-xl font-semibold text-foreground leading-tight">
+      {/* Info */}
+      <div className="p-3 sm:p-3.5 flex flex-col flex-1 gap-1.5 border-t border-border/40">
+        {/* Price */}
+        <span className="text-lg sm:text-xl font-bold text-foreground leading-tight">
           {formattedPrice}
         </span>
 
-        {/* Free shipping style badge if in stock */}
+        {/* Stock badge */}
         {inStock && (
-          <span className="text-[10px] sm:text-[11px] font-medium text-green-400 leading-none">
+          <span className="text-[10px] sm:text-[11px] font-medium text-green-500 dark:text-green-400 leading-none">
             Disponível
           </span>
         )}
@@ -74,7 +74,7 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
 
         {/* Brand */}
         {product.brand && (
-          <span className="text-[10px] text-muted-foreground/60 leading-none mt-auto pt-1">
+          <span className="text-[10px] text-muted-foreground/50 leading-none mt-auto pt-1">
             {product.brand}
           </span>
         )}
