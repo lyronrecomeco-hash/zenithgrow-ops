@@ -30,10 +30,13 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.25 }}
       onClick={() => onSelect(product)}
-      className="bg-card border border-border/60 overflow-hidden cursor-pointer group hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-200 flex flex-col rounded-xl"
+      className="bg-card border border-border/70 overflow-hidden cursor-pointer group hover:border-primary/50 hover:shadow-lg hover:shadow-primary/15 transition-all duration-200 flex flex-col rounded-xl relative"
     >
+      {/* Subtle glow on hover */}
+      <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.06),transparent_70%)] pointer-events-none" />
+
       {/* Image */}
-      <div className="aspect-[4/3] bg-secondary/30 flex items-center justify-center overflow-hidden relative">
+      <div className="aspect-[4/3] bg-secondary/40 flex items-center justify-center overflow-hidden relative">
         {product.image_url ? (
           <img
             src={product.image_url}
@@ -42,39 +45,39 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
             loading="lazy"
           />
         ) : (
-          <Package className="w-10 h-10 text-muted-foreground/30" />
+          <Package className="w-10 h-10 text-muted-foreground/25" />
         )}
         {!inStock && (
-          <div className="absolute inset-0 bg-background/70 backdrop-blur-sm flex items-center justify-center">
+          <div className="absolute inset-0 bg-background/75 backdrop-blur-sm flex items-center justify-center">
             <span className="text-[10px] font-semibold text-destructive bg-destructive/15 px-2.5 py-1 rounded-full border border-destructive/30">
               Esgotado
+            </span>
+          </div>
+        )}
+        {inStock && (
+          <div className="absolute top-1.5 right-1.5">
+            <span className="text-[9px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full backdrop-blur-sm">
+              Disponível
             </span>
           </div>
         )}
       </div>
 
       {/* Info */}
-      <div className="p-3 sm:p-3.5 flex flex-col flex-1 gap-1.5 border-t border-border/40">
-        {/* Price */}
-        <span className="text-lg sm:text-xl font-bold text-foreground leading-tight">
+      <div className="p-3 sm:p-3.5 flex flex-col flex-1 gap-1 border-t border-border/50 relative">
+        {/* Price - prominent */}
+        <span className="text-lg sm:text-xl font-extrabold text-primary leading-tight">
           {formattedPrice}
         </span>
 
-        {/* Stock badge */}
-        {inStock && (
-          <span className="text-[10px] sm:text-[11px] font-medium text-green-500 dark:text-green-400 leading-none">
-            Disponível
-          </span>
-        )}
-
         {/* Product name */}
-        <h3 className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-snug mt-0.5">
+        <h3 className="text-xs sm:text-sm text-foreground/80 line-clamp-2 leading-snug mt-0.5 font-medium">
           {product.name}
         </h3>
 
         {/* Brand */}
         {product.brand && (
-          <span className="text-[10px] text-muted-foreground/50 leading-none mt-auto pt-1">
+          <span className="text-[10px] text-muted-foreground/60 leading-none mt-auto pt-1.5 uppercase tracking-wide">
             {product.brand}
           </span>
         )}
