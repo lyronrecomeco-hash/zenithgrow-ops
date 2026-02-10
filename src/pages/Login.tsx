@@ -15,7 +15,7 @@ export default function Login() {
   const { companyName } = useCompany();
   const navigate = useNavigate();
 
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  if (isAuthenticated) return <Navigate to="/admin/dashboard" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
