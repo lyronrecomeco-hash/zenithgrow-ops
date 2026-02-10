@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import StoreHeader from '@/components/store/StoreHeader';
 import HeroBanner from '@/components/store/HeroBanner';
@@ -112,11 +112,13 @@ export default function Store() {
       <div className="relative z-10">
       <StoreHeader companyName={company.name} whatsappNumber={company.phone || ''} search={search} onSearchChange={setSearch} />
 
-      <HeroBanner
-        companyName={company.name}
-        products={products}
-        onProductSelect={(p) => navigate(`/produto/${p.id}`)}
-      />
+      {!search && (
+        <HeroBanner
+          companyName={company.name}
+          products={products}
+          onProductSelect={(p) => navigate(`/produto/${p.id}`)}
+        />
+      )}
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 pb-16 space-y-3 sm:space-y-5">
         {/* Categories */}
@@ -137,7 +139,11 @@ export default function Store() {
         </motion.div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-muted-foreground py-12">Nenhum produto encontrado.</p>
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <Search className="w-10 h-10 text-muted-foreground/40" />
+            <p className="text-muted-foreground text-sm">Nenhum produto encontrado para "<span className="text-foreground font-medium">{search}</span>"</p>
+            <button onClick={() => setSearch('')} className="text-xs text-primary hover:underline">Limpar busca</button>
+          </div>
         )}
 
         {/* Pagination */}
