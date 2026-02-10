@@ -46,7 +46,7 @@ export default function Store() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<SortOption>('name-asc');
-  const [showFilters, setShowFilters] = useState(false);
+  
   const [stockFilter, setStockFilter] = useState<'all' | 'available' | 'unavailable'>('all');
 
   useEffect(() => {
