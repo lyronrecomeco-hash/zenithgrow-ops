@@ -85,18 +85,20 @@ export default function ProductDetail() {
   const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   const handleShare = async () => {
-    const url = window.location.href;
+    const baseUrl = window.location.origin;
+    const shareUrl = `${baseUrl}/loja/${product.id}`;
+    const shareText = `Confira: ${product.name} por ${formattedPrice}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: product.name, text: `Confira: ${product.name} por ${formattedPrice}`, url });
+        await navigator.share({ title: product.name, text: shareText, url: shareUrl });
       } else {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(shareUrl);
         setCopied(true);
         toast({ title: 'Link copiado!', description: 'Compartilhe com seus contatos.' });
         setTimeout(() => setCopied(false), 2000);
       }
     } catch {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
