@@ -33,7 +33,7 @@ interface CompanySettings {
 }
 
 export default function ProductDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
