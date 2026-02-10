@@ -41,42 +41,45 @@ export default function ProductModal({ product, open, onClose, whatsappNumber }:
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto p-0 gap-0">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto p-0 gap-0 bg-card border-border/60">
         {/* Image */}
-        <div className="aspect-[4/3] bg-secondary/30 flex items-center justify-center overflow-hidden rounded-t-lg">
+        <div className="aspect-[4/3] bg-secondary/30 flex items-center justify-center overflow-hidden rounded-t-lg relative">
           {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="w-full h-full object-contain" />
+            <img src={product.image_url} alt={product.name} className="w-full h-full object-contain p-2" />
           ) : (
             <Package className="w-16 h-16 text-muted-foreground/20" />
           )}
         </div>
 
-        {/* Content */}
-        <div className="px-5 pb-5 pt-4 space-y-4">
+        {/* Header: Name, Code, Brand */}
+        <div className="px-5 pt-4 pb-3 border-b border-border/40">
           <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg leading-snug break-words pr-6">
+            <DialogTitle className="text-base font-bold leading-snug break-words pr-6 text-foreground">
               {product.name}
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
               Código: {product.code}
             </DialogDescription>
           </DialogHeader>
-
           {product.brand && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-1.5">
               Marca: <span className="text-foreground font-medium">{product.brand}</span>
             </p>
           )}
+        </div>
 
-          {product.description && (
-            <div className="rounded-lg bg-secondary/20 border border-border/30 p-4">
-              <p className="text-sm text-muted-foreground leading-relaxed break-words whitespace-pre-line">
-                {product.description}
-              </p>
-            </div>
-          )}
+        {/* Description */}
+        {product.description && (
+          <div className="px-5 py-3 border-b border-border/40">
+            <p className="text-sm text-muted-foreground leading-relaxed break-words whitespace-pre-line">
+              {product.description}
+            </p>
+          </div>
+        )}
 
-          <div className="flex items-center justify-between gap-3 pt-1">
+        {/* Price + Stock + CTA */}
+        <div className="px-5 py-4 space-y-3">
+          <div className="flex items-center justify-between gap-3">
             <span className="text-2xl font-bold text-primary">{formattedPrice}</span>
             <Badge variant={inStock ? 'default' : 'destructive'} className="text-xs shrink-0">
               {inStock ? 'Disponível' : 'Esgotado'}
