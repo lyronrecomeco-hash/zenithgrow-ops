@@ -297,65 +297,7 @@ export default function ProductDetail() {
               </TabsContent>
 
               <TabsContent value="specs" className="mt-3 sm:mt-4">
-                <div className="bg-card border border-border/50 rounded-2xl overflow-hidden">
-                  <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border/40 bg-secondary/20">
-                    <h3 className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
-                      <ShoppingBag className="w-4 h-4 text-primary" />
-                      Ficha Técnica
-                    </h3>
-                  </div>
-                  <div className="divide-y divide-border/30">
-                    <div className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <Package className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Produto</p>
-                        <p className="text-sm sm:text-base text-foreground font-semibold break-words">{product.name}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <Barcode className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Código</p>
-                        <p className="text-sm text-foreground font-mono">{product.code}</p>
-                      </div>
-                    </div>
-                    {product.brand && (
-                      <div className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                          <Tag className="w-4 h-4 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Marca</p>
-                          <p className="text-sm sm:text-base text-foreground font-semibold">{product.brand}</p>
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <Box className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Preço</p>
-                        <p className="text-lg sm:text-xl text-primary font-extrabold">{formattedPrice}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 px-4 sm:px-6 py-3.5 sm:py-4">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${inStock ? 'bg-emerald-500/10' : 'bg-destructive/10'}`}>
-                        {inStock ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-destructive" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Disponibilidade</p>
-                        <Badge variant={inStock ? 'default' : 'destructive'} className="text-xs">
-                          {inStock ? 'Em estoque' : 'Esgotado'}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <TechSpecs product={product} />
               </TabsContent>
             </Tabs>
 
