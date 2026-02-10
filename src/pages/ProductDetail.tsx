@@ -142,7 +142,7 @@ export default function ProductDetail() {
         <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-24">
           {/* Back button */}
           <button
-            onClick={() => navigate('/loja')}
+            onClick={() => navigate('/')}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mb-4 sm:mb-6"
           >
             <ArrowLeft className="w-4 h-4" />

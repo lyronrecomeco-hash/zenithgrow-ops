@@ -114,7 +114,7 @@ export default function Store() {
       <HeroBanner
         companyName={company.name}
         products={products}
-        onProductSelect={(p) => navigate(`/loja/${p.id}`)}
+        onProductSelect={(p) => navigate(`/produto/${p.id}`)}
       />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 pb-16 space-y-3 sm:space-y-5">
