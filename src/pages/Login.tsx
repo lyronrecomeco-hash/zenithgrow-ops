@@ -15,7 +15,7 @@ export default function Login() {
   const { companyName } = useCompany();
   const navigate = useNavigate();
 
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  if (isAuthenticated) return <Navigate to="/admin/dashboard" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +24,7 @@ export default function Login() {
     const result = await login(email, password);
     setLoading(false);
     if (result.success) {
-      navigate('/dashboard');
+      navigate('/admin/dashboard');
     } else {
       setError(result.error || 'Email ou senha inválidos.');
     }

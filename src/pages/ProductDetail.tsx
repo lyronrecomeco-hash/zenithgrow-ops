@@ -73,7 +73,7 @@ export default function ProductDetail() {
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <Package className="w-16 h-16 text-muted-foreground/30" />
           <p className="text-muted-foreground">Produto não encontrado.</p>
-          <Button variant="outline" onClick={() => navigate('/loja')} className="gap-2">
+          <Button variant="outline" onClick={() => navigate('/')} className="gap-2">
             <ArrowLeft className="w-4 h-4" /> Voltar à loja
           </Button>
         </div>
@@ -86,7 +86,7 @@ export default function ProductDetail() {
 
   const handleShare = async () => {
     const baseUrl = window.location.origin;
-    const shareUrl = `${baseUrl}/loja/${product.id}`;
+    const shareUrl = `${baseUrl}/produto/${product.id}`;
     const shareText = `Confira: ${product.name} por ${formattedPrice}`;
     try {
       if (navigator.share) {
@@ -142,7 +142,7 @@ export default function ProductDetail() {
         <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-24">
           {/* Back button */}
           <button
-            onClick={() => navigate('/loja')}
+            onClick={() => navigate('/')}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mb-4 sm:mb-6"
           >
             <ArrowLeft className="w-4 h-4" />

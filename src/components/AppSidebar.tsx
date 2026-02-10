@@ -13,17 +13,17 @@ import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-  { label: 'Produtos', icon: Package, path: '/products' },
-  { label: 'Categorias', icon: Tags, path: '/categories' },
-  { label: 'Estoque', icon: Warehouse, path: '/stock' },
-  { label: 'Clientes', icon: Users, path: '/clients' },
-  { label: 'Vendas', icon: ShoppingCart, path: '/sales' },
-  { label: 'Pagamentos', icon: CreditCard, path: '/installments' },
-  { label: 'Financeiro', icon: DollarSign, path: '/financial' },
-  { label: 'Notas Fiscais', icon: Receipt, path: '/invoices' },
-  { label: 'Relatórios', icon: BarChart3, path: '/reports' },
-  { label: 'Configurações', icon: Settings, path: '/settings' },
+  { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
+  { label: 'Produtos', icon: Package, path: '/admin/products' },
+  { label: 'Categorias', icon: Tags, path: '/admin/categories' },
+  { label: 'Estoque', icon: Warehouse, path: '/admin/stock' },
+  { label: 'Clientes', icon: Users, path: '/admin/clients' },
+  { label: 'Vendas', icon: ShoppingCart, path: '/admin/sales' },
+  { label: 'Pagamentos', icon: CreditCard, path: '/admin/installments' },
+  { label: 'Financeiro', icon: DollarSign, path: '/admin/financial' },
+  { label: 'Notas Fiscais', icon: Receipt, path: '/admin/invoices' },
+  { label: 'Relatórios', icon: BarChart3, path: '/admin/reports' },
+  { label: 'Configurações', icon: Settings, path: '/admin/settings' },
 ];
 
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {

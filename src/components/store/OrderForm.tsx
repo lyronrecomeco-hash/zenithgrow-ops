@@ -89,7 +89,7 @@ export default function OrderForm({ open, onClose, whatsappNumber }: OrderFormPr
               variant="outline"
               size="sm"
               className="gap-1.5 mt-1 text-xs border-primary/30 text-primary hover:bg-primary/10"
-              onClick={() => { onClose(); navigate('/loja'); }}
+              onClick={() => { onClose(); navigate('/'); }}
             >
               Ver produtos <ArrowRight className="w-3.5 h-3.5" />
             </Button>
