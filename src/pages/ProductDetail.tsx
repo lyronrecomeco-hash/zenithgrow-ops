@@ -73,7 +73,7 @@ export default function ProductDetail() {
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <Package className="w-16 h-16 text-muted-foreground/30" />
           <p className="text-muted-foreground">Produto não encontrado.</p>
-          <Button variant="outline" onClick={() => navigate('/loja')} className="gap-2">
+          <Button variant="outline" onClick={() => navigate('/')} className="gap-2">
             <ArrowLeft className="w-4 h-4" /> Voltar à loja
           </Button>
         </div>
