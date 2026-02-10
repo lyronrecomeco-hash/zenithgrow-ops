@@ -149,7 +149,7 @@ export default function ProductDetail() {
 
                 <Button
                   onClick={() => setShowOrderForm(true)}
-                  disabled={!inStock || !company.phone}
+                  disabled={!inStock}
                   size="lg"
                   className="w-full gap-2 mt-auto gradient-primary text-primary-foreground hover:opacity-90 h-12 sm:h-14 text-sm sm:text-base font-bold rounded-xl"
                 >
